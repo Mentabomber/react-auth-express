@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import fetchApi from "../utils/fetchApi";
 
 // creazione dell context
 const PostsContext = createContext();
@@ -8,7 +9,7 @@ export function PostsProvider({ children }) {
   const [postsList, setPostsList] = useState([]);
 
   async function fetchData() {
-    const jsonData = await (await fetch('http://localhost:3307/posts')).json();
+    const jsonData = await fetchApi('/posts');
 
     setPostsList(jsonData.data);
   }

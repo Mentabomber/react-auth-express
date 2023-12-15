@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import fetchApi from "../utils/fetchApi";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem("token") ?? null);
   const [isLogged, setIsLogged] = useState(false);
   const [initComplete, setInitComplete] = useState(false);
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export function AuthProvider({ children }) {
     // prima finisci di fare quello che stai facendo, come update stati e rendering,
     // dopo eseugui la navigazione
     setTimeout(() => {
-      navigate("/login");
+      navigate("/");
     });
   }
 
@@ -48,27 +49,16 @@ export function AuthProvider({ children }) {
    * Recupera l'utente attuale tramite una chiamata API
    */
   async function fetchLoggedUser() {
-    const user = await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          name: "Andrea",
-          surname: "Bianchi",
-          email: "andrea.bianchi@gmail.com"
-        });
-      });
-    });
+    const { user } = await fetchApi("/me");
 
     setUser(user);
     setIsLogged(true);
   }
 
   async function initializeData() {
-    const token = localStorage.getItem("token");
-
     // Se c'è un token memorizzato nel localStorage,
     // lo salvo internamente e lo uso per recuperare l'utente a cui appartiene
     if (token) {
-      setToken(token);
       await fetchLoggedUser();
     }
 

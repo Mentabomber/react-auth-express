@@ -11,6 +11,8 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoutes from "./middlewares/PrivateRoutes";
 import GuestRoutes from "./middlewares/GuestRoutes";
+import NotFound from "./pages/NotFound";
+import GenericError from "./pages/GenericError";
 
 // creiamo un context globale e lo esporto per poterlo usare in altri componenti
 export const GlobalContext = createContext();
@@ -27,8 +29,8 @@ function App() {
       <BrowserRouter>
        <AuthProvider>
         <Routes>
-          <Route element={<DefaultLayout />}>
-            <Route path="/" element={<Home />}></Route>
+          <Route element={<DefaultLayout />} errorElement={<GenericError></GenericError>}>
+            <Route path="/" element={<Home />} errorElement={<GenericError></GenericError>}></Route>
             <Route path="/menu" element={<Menu />}></Route>
             <Route path="/contatti" element={<Contatti />}></Route>
             <Route path="/posts/:slug" element={<PostsShow />}></Route>
@@ -41,6 +43,8 @@ function App() {
               <Route index element={<Dashboard />}></Route>
               <Route path="user" element={<Dashboard />}></Route>
             </Route>
+
+            <Route path="*" element={<NotFound />}></Route>
         </Routes>
         </AuthProvider>
       </BrowserRouter>

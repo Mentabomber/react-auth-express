@@ -2,37 +2,31 @@ import { Link, useNavigate } from "react-router-dom";
 import { handleInputChange } from "../utils/handleInputChange";
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import fetchApi from "../utils/fetchApi";
 
 export default function Login() {
-  const { handleLoginOrRegistration } = useAuth();
   const navigate = useNavigate();
+  const { handleLoginOrRegistration } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
+  const [error, setError] = useState("");
 
   async function onLoginSubmit(e) {
     e.preventDefault();
+    try {
+      // chiamo l'endpoint di login
+      const resp = await fetchApi("/login", "POST", formData);
 
-    // chiamata api che invia i dati di login al server e ne riceve la risposta.
-    const resp = await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          token: "abc123",
-          user: {
-            name: "Mario",
-            surname: "Rossi",
-            email: formData.email,
-          }
-        });
-      }, 2000);
-    });
+      // salvo i dati nel AuthContext
+      handleLoginOrRegistration(resp);
 
-    // salvo i dati nel AuthContext
-    handleLoginOrRegistration(resp);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    }
 
-    navigate("/dashboard");
   }
 
 
